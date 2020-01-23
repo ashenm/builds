@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="author" content="Ashen Gunaratne" />
+
+  <title>Build Statuses</title>
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous" />
+
+  <style>
+
+    p {
+      margin: 0;
+    }
+
+    .card {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-left: 5px solid #6C757D!important
+    }
+
+    .card-title {
+      margin: 0;
+    }
+
+    .card.passed {
+      border-left-color: #28A745!important;
+    }
+
+    .card.errored, .card.failed {
+      border-left-color: #DC3545!important;
+    }
+
+    .card.canceled {
+      border-left-color: #6C757D!important;
+    }
+
+    .card.started {
+      border-left-color: #FFC107!important;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .label {
+      color: #6C757D;
+      font-size: small;
+    }
+
+    .build, .commit {
+      display: none;
+    }
+
+    .end, .commit, .build {
+      text-align: right;
+    }
+
+    @media (min-width: 576px) {
+      .build { display: initial; }
+    }
+
+    @media (min-width: 768px) {
+      .commit { display: initial; }
+    }
+
+  </style>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous" defer="defer"></script>
+
+  <script>
+
+    var discharge = function ($element, build) {
+
+      $.getJSON({
+        data: { limit: 1 },
+        headers: { 'Travis-API-Version': '3' },
+        url: [ travis_endpoint(build.travis_endpoint, true), encodeURIComponent(build.slug), '/builds' ].join('')
+      }).done(function (data) {
+
+        // extended deets
+        $element.end.attr('data-end', data.builds[0].finished_at);
+        $element.commit.attr('data-sha', data.builds[0].commit.sha);
+
+        // tooltips
+        $element.commit.attr('title', data.builds[0].commit.sha);
+        $element.end.attr('title', data.builds[0].finished_at);
+
+        // external links
+        $element.commit.html([ '<a href="', data.builds[0].commit.compare_url, '" target="_blank">', data.builds[0].commit.sha.slice(0, 7), '</a>' ].join(''));
+
+        // summary
+        $element.end.html(data.builds[0].finished_at ? moment(data.builds[0].finished_at).fromNow() : '&#8734;');
+        $element.build.text(data.builds[0].number.replace(/^/, '#'));
+        $element.branch.text(data.builds[0].branch.name);
+        $element.addClass(data.builds[0].state);
+
+      });
+
+    };
+
+    var component = function (build) {
+
+      var $card = $('<div class="card"></div>');
+
+      $card.body = $([
+        '<div class="card-body">',
+          '<p class="card-title text-monospace"><a href="', travis_endpoint(build.travis_endpoint),  build.slug, '">', build.slug, '</p>',
+        '</div>'
+      ].join(''));
+
+      $card.branch = $('<p class="branch col">&#8734;</p>');
+      $card.build = $('<p class="build col">&#8734;</p>');
+      $card.commit = $('<p class="commit col">&#8734;</p>');
+      $card.end = $('<p class="end col">&#8734;</p>');
+
+      $('<div class="row"><p class="col label branch">BRANCH</p><p class="col label build">LAST BUILD</p><p class="col label commit">COMMIT</p><p class="col label end">FINISHED</p></div>').appendTo($card.body);
+
+      $('<div class="row"></div>').appendTo($card.body)
+        .append([ $card.branch, $card.build, $card.commit, $card.end ]);
+
+      return $card.append($card.body);
+    
+    };
+
+    // TODO remove upon complete migration
+    // https://docs.travis-ci.com/user/migrate/open-source-repository-migration
+    var travis_endpoint = function (endpoint, api) {
+      return api ? [ 'https://api.', endpoint !== 'org' ? 'travis-ci.com/' : 'travis-ci.org/', 'repo/' ].join('') : [ 'https://', endpoint !== 'org' ? 'travis-ci.com/' : 'travis-ci.org/' ].join('');
+    };
+
+    var populate = function (builds) {
+
+      var $container = $('main');
+      var $placeholders = new Array(builds.length);
+
+      // construct placeholders
+      builds.forEach(function (build, index) {
+        $placeholders[index] = component(build);
+      });
+
+      // render placeholders
+      $container.append($placeholders);
+
+      builds.forEach(function (build, index) {
+        discharge($placeholders[index], build);
+      });
+
+    };
+
+    $(function () { $.getJSON('/builds.json').done(populate); });
+
+  </script>
+
+</head>
+<body class="container">
+  <header></header>
+  <main></main>
+  <footer></footer>
+</body>
+</html>
+<!-- vim: set expandtab shiftwidth=2 syntax=xhtml: -->
