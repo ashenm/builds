@@ -1,18 +1,15 @@
 [
   {
-    "slug": "ashenm/baseimage",
-    "travis_endpoint": "org"
+    "slug": "ashenm/baseimage"
   },
   {
-    "slug": "ashenm/ide",
-    "travis_endpoint": "org"
+    "slug": "ashenm/ide"
   },
   {
     "slug": "ashenm/environment"
   },
   {
-    "slug": "ashenm/homepage",
-    "travis_endpoint": "org"
+    "slug": "ashenm/homepage"
   },
   {
     "slug": "ashenm/jekyll-terse"
@@ -21,23 +18,18 @@
     "slug": "ashenm/shell"
   },
   {
-    "slug": "ashenm/tools",
-    "travis_endpoint": "org"
+    "slug": "ashenm/tools"
   },
   {
-    "slug": "ashenm/tunneller",
-    "travis_endpoint": "org"
+    "slug": "ashenm/tunneller"
   },
   {
-    "slug": "ashenm/workspace",
-    "travis_endpoint": "org"
+    "slug": "ashenm/workspace"
   },
   {
-    "slug": "ashenm/xworkspace",
-    "travis_endpoint": "org"
+    "slug": "ashenm/xworkspace"
   },
   {
-    "slug": "ashenm/xmlresume",
-    "travis_endpoint": "org"
+    "slug": "ashenm/xmlresume"
   }
 ]

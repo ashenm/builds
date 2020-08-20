@@ -74,12 +74,15 @@
 
   <script>
 
+    var TRAVIS_ENDPOINT = 'https://travis-ci.com/';
+    var TRAVIS_API_ENDPOINT = 'https://api.travis-ci.com/repo/';
+
     var discharge = function ($element, build) {
 
       $.getJSON({
         data: { limit: 1 },
         headers: { 'Travis-API-Version': '3' },
-        url: [ travis_endpoint(build.travis_endpoint, true), encodeURIComponent(build.slug), '/builds' ].join('')
+        url: [ TRAVIS_API_ENDPOINT, encodeURIComponent(build.slug), '/builds' ].join('')
       }).done(function (data) {
 
         // extended deets
@@ -109,7 +112,7 @@
 
       $card.body = $([
         '<div class="card-body">',
-          '<p class="card-title text-monospace"><a href="', travis_endpoint(build.travis_endpoint),  build.slug, '">', build.slug, '</p>',
+          '<p class="card-title text-monospace"><a href="', TRAVIS_ENDPOINT,  build.slug, '">', build.slug, '</p>',
         '</div>'
       ].join(''));
 
@@ -125,12 +128,6 @@
 
       return $card.append($card.body);
     
-    };
-
-    // TODO remove upon complete migration
-    // https://docs.travis-ci.com/user/migrate/open-source-repository-migration
-    var travis_endpoint = function (endpoint, api) {
-      return api ? [ 'https://api.', endpoint !== 'org' ? 'travis-ci.com/' : 'travis-ci.org/', 'repo/' ].join('') : [ 'https://', endpoint !== 'org' ? 'travis-ci.com/' : 'travis-ci.org/' ].join('');
     };
 
     var populate = function (builds) {
