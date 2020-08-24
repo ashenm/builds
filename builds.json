@@ -1,6 +1,7 @@
 [
   {
-    "slug": "ashenm/baseimage"
+    "slug": "ashenm/baseimage",
+    "branches": [ "latest", "developer" ]
   },
   {
     "slug": "ashenm/ide"
@@ -24,7 +25,8 @@
     "slug": "ashenm/tunneller"
   },
   {
-    "slug": "ashenm/workspace"
+    "slug": "ashenm/workspace",
+    "branches": [ "latest", "stanford-cs143" ]
   },
   {
     "slug": "ashenm/xworkspace"
