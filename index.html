@@ -52,6 +52,10 @@
       display: table;
     }
 
+    div.repo > div.header {
+      position: relative;
+    }
+
     div.repo > div.footer {
       cursor: pointer;
       text-align: right;
@@ -107,6 +111,16 @@
 
     div.slug {
       font-family: "Courier New";
+    }
+
+    a.refresh {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    a.refresh:hover {
+      text-decoration: none;
     }
 
     p.label {
@@ -220,36 +234,48 @@
 
     var populate = function populateRepoStatuses (data) {
 
-      var repos = Array.prototype.concat.apply([], data);
+      var repos = [];
 
-      for (var repo of repos) {
+      for (var repo of Array.prototype.concat.apply([], data)) {
 
-        repo.branches = Array.prototype.concat.apply([], repo.branches);
+        var inset = {
+          $slug: repo.slug,
+          $branches: Array.prototype.concat.apply([], repo.branches),
+          $latest: { branch: undefined },
+          $expand: false
+        };
 
-        for (var branch of repo.branches) {
-          refresh(repo[branch] = { slug: repo.slug, branch: branch });
+        for (var branch of inset.$branches) {
+          inset[branch] = { branch: { name: branch } };
         }
 
-        Object.assign(repo, { $latest: { slug: repo.slug, branch: '' }, expand: false });
-
-        refresh(repo.$latest);
+        repos.push(inset);
+        refresh(inset);
 
       }
 
-      window.vue = new Vue({ el: '#vue', data: { repos: repos } });
+      window.vue = new Vue({ el: '#vue', data: { repos: repos }, methods: { refresh: refresh } });
 
     };
 
-    var refresh = function updateRepoPlaceholders (branch) {
+    var refresh = function updateAllBranchStatuses (repo) {
+
+      for (var branch of repo.$branches.concat('')) {
+        poll(repo, branch);
+      }
+
+    };
+
+    var poll = function updateBranchStatus (repo, branch) {
+
+      var query = '?limit=1'.concat(branch ? '&branch.name='.concat(branch) : '');
 
       var headers = {
         'Travis-API-Version': '3',
         'Content-Type': 'application/x-www-form-urlencoded'
       };
 
-      var query = '?limit=1'.concat(branch.branch ? '&branch.name='.concat(branch.branch) : '');
-
-      fetch('https://api.travis-ci.com/repo/'.concat(encodeURIComponent(branch.slug), '/builds', query), {
+      fetch('https://api.travis-ci.com/repo/'.concat(encodeURIComponent(repo.$slug), '/builds', query), {
         headers: headers
       }).then(function (response) {
 
@@ -261,7 +287,7 @@
         // standardise error handling
 
       }).then(function (data) {
-        Object.assign(branch, data.builds.pop());
+        Object.assign(repo[branch || '$latest'], data.builds.pop());
       });
 
     };
@@ -292,10 +318,10 @@
   <header>
   </header>
   <main id="vue">
-    <div class="repo" v-for="repo in repos" v-bind:class="[ repo.$latest.state, { expand: repo.expand } ]">
+    <div class="repo" v-for="repo in repos" v-bind:class="[ repo.$latest.state, { expand: repo.$expand } ]">
       <div class="header">
         <div class="slug">
-          <v-slug v-bind:slug="repo.slug"></v-slug>
+          <v-slug v-bind:slug="repo.$slug"></v-slug>
         </div>
         <div class="builds">
           <div class="build">
@@ -309,7 +335,7 @@
               <v-branch v-bind:branch="repo.$latest.branch">&#8734;</v-branch>
             </p>
             <p class="ref">
-              <v-ref v-bind:slug="repo.slug" v-bind:build="repo.$latest.id" v-bind:number="repo.$latest.number">&#8734;</v-ref>
+              <v-ref v-bind:slug="repo.$slug" v-bind:build="repo.$latest.id" v-bind:number="repo.$latest.number">&#8734;</v-ref>
             </p>
             <p class="commit">
               <v-checksum v-bind:commit="repo.$latest.commit">&#8734;</v-checksum>
@@ -319,15 +345,16 @@
             </p>
           </div>
         </div>
+        <a class="refresh" href="javascript:void(0)" v-on:click.passive="refresh(repo)">&#8635;</a>
       </div>
       <div class="builds">
-        <div class="build" v-for="branch in repo.branches">
+        <div class="build" v-for="branch in repo.$branches">
           <p class="state" v-bind:class="repo[branch].state">&#8226;</p>
           <p class="branch">
             <v-branch v-bind:branch="repo[branch].branch">&#8734;</v-branch>
           </p>
           <p class="ref">
-            <v-ref v-bind:slug="repo.slug" v-bind:build="repo[branch].id" v-bind:number="repo[branch].number">&#8734;</v-ref>
+            <v-ref v-bind:slug="repo.$slug" v-bind:build="repo[branch].id" v-bind:number="repo[branch].number">&#8734;</v-ref>
           </p>
           <p class="commit">
             <v-checksum v-bind:commit="repo[branch].commit">&#8734;</v-checksum>
@@ -337,7 +364,7 @@
           </p>
         </div>
       </div>
-      <div class="footer" v-if="repo.branches.length" v-on:click.passive="repo.expand = !repo.expand"></div>
+      <div class="footer" v-if="repo.$branches.length" v-on:click.passive="repo.$expand = !repo.$expand"></div>
     </div>
   </main>
   <footer>
