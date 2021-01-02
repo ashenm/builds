@@ -29,7 +29,7 @@
   },
   {
     "slug": "ashenm/workspace",
-    "branches": [ "latest", "stanford-cs143" ]
+    "branches": [ "latest", "railsbank", "stanford-cs143" ]
   },
   {
     "slug": "ashenm/xworkspace"
