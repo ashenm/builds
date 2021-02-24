@@ -9,228 +9,17 @@
   <title>Build Statuses</title>
 
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap-reboot.min.css" integrity="sha512-gl/07tE1atRY5leOa5GtQa/pclV529xEP5cDTIdU1rj7vDh4KKz3nHrP7DsTBx3F++ihOqZGdcRTfOvrU/JF4g==" crossorigin="anonymous" />
-
-  <style>
-
-    main {
-      padding: 0 15px;
-      max-width: 720px;
-      margin: auto;
-    }
-
-    div.repo {
-      border: 1px solid #DFDFDF;
-      border-left: 5px solid #6C757D;
-      border-radius: 0.25rem;
-      margin-bottom: 0.5rem;
-      margin-top: 0.5rem;
-      padding: 1.25rem;
-    }
-
-    div.repo.passed {
-      border-left-color: #28A745;
-    }
-
-    div.repo.errored, div.repo.failed {
-      border-left-color: #DC3545;
-    }
-
-    div.repo.canceled {
-      border-left-color: #6C757D;
-    }
-
-    div.repo.started {
-      border-left-color: #FFC107;
-    }
-
-    div.repo > div.builds {
-      display: none;
-      font-family: monospace;
-    }
-
-    div.repo.expand > div.builds {
-      display: table;
-    }
-
-    div.repo > div.header {
-      position: relative;
-    }
-
-    div.repo > div.footer {
-      cursor: pointer;
-      text-align: right;
-    }
-
-    div.repo > div.footer:after {
-      content: "▾";
-    }
-
-    div.repo.expand > div.footer:after {
-      content: "▴";
-    }
-
-    div.builds {
-      display: table;
-      border-collapse: collapse;
-      table-layout: fixed;
-      width: 100%;
-    }
-
-    div.build {
-      display: table-row;
-    }
-
-    div.build > p {
-      display: table-cell;
-    }
-
-    div.build > p.state {
-      font-size: 1.5em;
-      vertical-align: middle;
-      border-right: 5px solid transparent;
-      line-height: 1;
-      width: 1ch;
-    }
-
-    div.build > p.state.passed {
-      color: #28A745;
-    }
-
-    div.build > p.state.errored,
-    div.build > p.state.failed {
-      color: #DC3545;
-    }
-
-    div.build > p.state.canceled {
-      color: #6C757D;
-    }
-
-    div.build > p.state.started {
-      color: #FFC107;
-    }
-
-    div.slug {
-      font-family: "Courier New";
-    }
-
-    a.refresh {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-
-    a.refresh:hover {
-      text-decoration: none;
-    }
-
-    p.label {
-      font-size: small;
-      color: #6C757D;
-    }
-
-    p.end, p.commit, p.ref {
-      text-align: right;
-    }
-
-    p.ref, p.commit {
-      display: none!important;
-    }
-
-    @media (min-width: 576px) {
-      p.ref { display: table-cell!important; }
-    }
-
-    @media (min-width: 768px) {
-      p.commit { display: table-cell!important; }
-    }
-
-  </style>
+  <link rel="stylesheet" href="/styles.css" />
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js" integrity="sha512-QJsj3afWlCpnQ60XzzYE8Jb3IgHIK1BcGZox9rUSmRRq3Ocz9vQ1yR80eX2/b9jfx/UuT5zYWNdrM8Te/eCMhQ==" crossorigin="anonymous"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous" defer="defer"></script>
 
+  <script src="/poll.js"></script>
+  <script src="/slug.js"></script>
+  <script src="/transformer.js"></script>
+  <script src="/components.js"></script>
+
   <script>
-
-    Vue.component('v-slug', {
-
-      props: [ 'slug' ],
-
-      computed: {
-        href: function () {
-          return 'https://travis-ci.com/'.concat(this.slug);
-        }
-      },
-
-      template: '<a v-bind:href="href">{{ slug }}</a>'
-
-    });
-
-    Vue.component('v-branch', {
-
-      props: [ 'branch' ],
-
-      computed: {
-        reference: function () {
-          return this.branch ? this.branch.name : '∞';
-        }
-      },
-
-      template: '<span>{{ reference }}</span>'
-
-    });
-
-    Vue.component('v-ref', {
-
-      props: [ 'slug', 'build', 'number' ],
-
-      computed: {
-
-        reference: function () {
-          return this.number ? this.number.replace(/^/, '#') : '∞';
-        },
-
-        href: function () {
-          return this.build ? 'https://travis-ci.com/'.concat(this.slug, '/builds/', this.build) : this.build;
-        }
-
-      },
-
-      template: '<a v-bind:href="href">{{ reference }}</a>'
-
-    });
-
-    Vue.component('v-checksum', {
-
-      props: {
-        commit: {
-          type: Object,
-          default: Object.create.bind(null, null)
-        }
-      },
-
-      computed: {
-        sha: function () {
-          return this.commit.sha ? this.commit.sha.slice(0, 7) : '∞';
-        }
-      },
-
-      template: '<a v-bind:href="commit.compare_url">{{ sha }}</a>'
-
-    });
-
-    Vue.component('v-end', {
-
-      props: [ 'end' ],
-
-      computed: {
-        reference: function () {
-          return this.end ? moment(this.end).fromNow() : '∞';
-        }
-      },
-
-      template: '<span>{{ reference }}</span>'
-
-    });
 
     var populate = function populateRepoStatuses (data) {
 
@@ -240,6 +29,7 @@
 
         var inset = {
           $slug: repo.slug,
+          $custodian: repo.custodian,
           $branches: Array.prototype.concat.apply([], repo.branches),
           $latest: { branch: undefined },
           $expand: false
@@ -261,34 +51,8 @@
     var refresh = function updateAllBranchStatuses (repo) {
 
       for (var branch of repo.$branches.concat('')) {
-        poll(repo, branch);
+        Poll[repo.$custodian](repo, branch);
       }
-
-    };
-
-    var poll = function updateBranchStatus (repo, branch) {
-
-      var query = '?limit=1'.concat(branch ? '&branch.name='.concat(branch) : '');
-
-      var headers = {
-        'Travis-API-Version': '3',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      };
-
-      fetch('https://api.travis-ci.com/repo/'.concat(encodeURIComponent(repo.$slug), '/builds', query), {
-        headers: headers
-      }).then(function (response) {
-
-        if (response.ok) {
-          return response.json();
-        }
-
-        // TODO
-        // standardise error handling
-
-      }).then(function (data) {
-        Object.assign(repo[branch || '$latest'], data.builds.pop());
-      });
 
     };
 
@@ -321,7 +85,7 @@
     <div class="repo" v-for="repo in repos" v-bind:class="[ repo.$latest.state, { expand: repo.$expand } ]">
       <div class="header">
         <div class="slug">
-          <v-slug v-bind:slug="repo.$slug"></v-slug>
+          <v-slug v-bind:slug="repo.$slug" v-bind:custodian="repo.$custodian"></v-slug>
         </div>
         <div class="builds">
           <div class="build">
@@ -335,7 +99,8 @@
               <v-branch v-bind:branch="repo.$latest.branch">&#8734;</v-branch>
             </p>
             <p class="ref">
-              <v-ref v-bind:slug="repo.$slug" v-bind:build="repo.$latest.id" v-bind:number="repo.$latest.number">&#8734;</v-ref>
+              <v-ref v-bind:href="repo.$latest.url" v-bind:number="repo.$latest.number"
+              >&#8734;</v-ref>
             </p>
             <p class="commit">
               <v-checksum v-bind:commit="repo.$latest.commit">&#8734;</v-checksum>
@@ -354,7 +119,7 @@
             <v-branch v-bind:branch="repo[branch].branch">&#8734;</v-branch>
           </p>
           <p class="ref">
-            <v-ref v-bind:slug="repo.$slug" v-bind:build="repo[branch].id" v-bind:number="repo[branch].number">&#8734;</v-ref>
+            <v-ref v-bind:href="repo[branch].url" v-bind:number="repo[branch].number">&#8734;</v-ref>
           </p>
           <p class="commit">
             <v-checksum v-bind:commit="repo[branch].commit">&#8734;</v-checksum>

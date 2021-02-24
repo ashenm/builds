@@ -1,43 +1,56 @@
 [
   {
     "slug": "ashenm/baseimage",
-    "branches": [ "latest", "developer" ]
+    "branches": [ "latest", "developer" ],
+    "custodian": "github"
   },
   {
-    "slug": "ashenm/ide"
+    "slug": "ashenm/ide",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/docker-hub-cleanup"
+    "slug": "ashenm/docker-hub-cleanup",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/environment"
+    "slug": "ashenm/environment",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/homepage"
+    "slug": "ashenm/homepage",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/httpd"
+    "slug": "ashenm/httpd",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/jekyll-terse"
+    "slug": "ashenm/jekyll-terse",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/shell"
+    "slug": "ashenm/shell",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/tools"
+    "slug": "ashenm/tools",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/tunneller"
+    "slug": "ashenm/tunneller",
+    "custodian": "travis"
   },
   {
     "slug": "ashenm/workspace",
-    "branches": [ "latest", "railsbank", "stanford-cs143" ]
+    "branches": [ "latest", "railsbank", "stanford-cs143" ],
+    "custodian": "github"
   },
   {
-    "slug": "ashenm/xworkspace"
+    "slug": "ashenm/xworkspace",
+    "custodian": "travis"
   },
   {
-    "slug": "ashenm/xmlresume"
+    "slug": "ashenm/xmlresume",
+    "custodian": "travis"
   }
 ]
