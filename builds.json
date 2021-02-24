@@ -22,7 +22,7 @@
   },
   {
     "slug": "ashenm/httpd",
-    "custodian": "travis"
+    "custodian": "github"
   },
   {
     "slug": "ashenm/jekyll-terse",
