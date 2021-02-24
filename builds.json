@@ -5,6 +5,10 @@
     "custodian": "github"
   },
   {
+    "slug": "ashenm/blob",
+    "custodian": "github"
+  },
+  {
     "slug": "ashenm/ide",
     "custodian": "travis"
   },
