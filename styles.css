@@ -1,0 +1,133 @@
+main {
+  padding: 0 15px;
+  max-width: 720px;
+  margin: auto;
+}
+
+div.repo {
+  border: 1px solid #DFDFDF;
+  border-left: 5px solid #6C757D;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1.25rem;
+}
+
+div.repo.passed {
+  border-left-color: #28A745;
+}
+
+div.repo.failed {
+  border-left-color: #DC3545;
+}
+
+div.repo.canceled {
+  border-left-color: #6C757D;
+}
+
+div.repo.started {
+  border-left-color: #FFC107;
+}
+
+div.repo > div.builds {
+  display: none;
+  font-family: monospace;
+}
+
+div.repo.expand > div.builds {
+  display: table;
+}
+
+div.repo > div.header {
+  position: relative;
+}
+
+div.repo > div.footer {
+  cursor: pointer;
+  text-align: right;
+}
+
+div.repo > div.footer:after {
+  content: "▾";
+}
+
+div.repo.expand > div.footer:after {
+  content: "▴";
+}
+
+div.builds {
+  display: table;
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+div.build {
+  display: table-row;
+}
+
+div.build > p {
+  display: table-cell;
+}
+
+div.build > p.state {
+  font-size: 1.5em;
+  vertical-align: middle;
+  border-right: 5px solid transparent;
+  line-height: 1;
+  width: 1ch;
+}
+
+div.build > p.state.passed {
+  color: #28A745;
+}
+
+div.build > p.state.errored,
+div.build > p.state.failed {
+  color: #DC3545;
+}
+
+div.build > p.state.canceled {
+  color: #6C757D;
+}
+
+div.build > p.state.started {
+  color: #FFC107;
+}
+
+div.slug {
+  font-family: "Courier New";
+}
+
+a.refresh {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+a.refresh:hover {
+  text-decoration: none;
+}
+
+p.label {
+  font-size: small;
+  color: #6C757D;
+}
+
+p.end, p.commit, p.ref {
+  text-align: right;
+}
+
+p.ref, p.commit {
+  display: none!important;
+}
+
+@media (min-width: 576px) {
+  p.ref { display: table-cell!important; }
+}
+
+@media (min-width: 768px) {
+  p.commit { display: table-cell!important; }
+}
+
+/* vim: set expandtab shiftwidth=2: */
