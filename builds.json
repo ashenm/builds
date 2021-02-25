@@ -38,7 +38,7 @@
   },
   {
     "slug": "ashenm/tools",
-    "custodian": "travis"
+    "custodian": "github"
   },
   {
     "slug": "ashenm/tunneller",
