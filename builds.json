@@ -22,7 +22,7 @@
   },
   {
     "slug": "ashenm/homepage",
-    "custodian": "travis"
+    "custodian": "github"
   },
   {
     "slug": "ashenm/httpd",
